@@ -8,6 +8,8 @@ spring:
     driver-class-name: org.postgresql.Driver
 #    initialization-mode: always
 #   data: classpath:psql_database_tables.sql,classpath:security-schema.sql,classpath:users.sql,classpath:clients.sql,classpath:scopes.sql
+  resources: 
+    add-mappings: true
   jpa:
     show-sql: true
     properties:

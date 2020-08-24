@@ -1,4 +1,4 @@
-package com.auth.config;
+package com.auth.config.security;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEAlgorithm;
@@ -34,7 +34,7 @@ public class CryptoConfig {
     @Bean
     public DefaultJWTEncryptionAndDecryptionService defaultEncryptionService() throws MalformedURLException, NoSuchAlgorithmException, JOSEException, InvalidKeySpecException {
         DefaultJWTEncryptionAndDecryptionService defaultEncryptionService = new DefaultJWTEncryptionAndDecryptionService(defaultKeyStore());
-        defaultEncryptionService.setDefaultAlgorithm(JWEAlgorithm.RSA1_5);
+        defaultEncryptionService.setDefaultAlgorithm(JWEAlgorithm.PBES2_HS512_A256KW);
         defaultEncryptionService.setDefaultDecryptionKeyId("rsa1");
         defaultEncryptionService.setDefaultEncryptionKeyId("rsa1");
         return defaultEncryptionService;

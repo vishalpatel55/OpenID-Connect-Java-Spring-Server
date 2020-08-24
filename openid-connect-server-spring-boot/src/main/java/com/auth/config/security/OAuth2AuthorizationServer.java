@@ -1,4 +1,4 @@
-package com.auth.config;
+package com.auth.config.security;
 
 import org.mitre.oauth2.service.impl.BlacklistAwareRedirectResolver;
 import org.mitre.oauth2.service.impl.DefaultOAuth2AuthorizationCodeService;
@@ -36,9 +36,6 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
 
     private final CustomGrantTypeCollection tokenGranter;
     
- //   private final PasswordEncoder passwordEncoder;
-
-
     @Autowired
     public OAuth2AuthorizationServer(
             ConnectOAuth2RequestFactory connectOAuth2RequestFactory,
@@ -55,7 +52,6 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
         this.blacklistAwareRedirectResolver = blacklistAwareRedirectResolver;
         this.defaultOAuth2AuthorizationCodeService = defaultOAuth2AuthorizationCodeService;
         this.tokenGranter = tokenGranter;
-  //      this.passwordEncoder = passwordEncoder;
     }
 
   @Override
@@ -69,10 +65,11 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
         endpoints.tokenServices(this.defaultOAuth2ProviderTokenService);
         endpoints.userApprovalHandler(this.tofuUserApprovalHandler);
         endpoints.requestValidator(oauthRequestValidator());
-       // endpoints.setClientDetailsService(this.defaultOAuth2ClientDetailsEntityService);
+        endpoints.setClientDetailsService(this.defaultOAuth2ClientDetailsEntityService);
         endpoints.authorizationCodeServices(this.defaultOAuth2AuthorizationCodeService);
         endpoints.tokenGranter(this.tokenGranter.customGrants(endpoints));
         endpoints.pathMapping("/oauth/authorize", "/authorize");
+        
         
     }
 
@@ -84,8 +81,7 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
     
     @Autowired
 	public void configureAuthorizationEndpoint(AuthorizationEndpoint authorizationEndpoint) {
-		
-		//redirectResolver.setMatchPorts(false);
+
 		authorizationEndpoint.setRedirectResolver(this.blacklistAwareRedirectResolver);
 	}
 

@@ -1,4 +1,4 @@
-package com.auth.config;
+package com.auth.config.security;
 
 import static com.auth.util.Constants.ANY;
 import static com.auth.util.Constants.URL_SEPARATOR;

@@ -1,4 +1,4 @@
-package com.auth.config;
+package com.auth.config.security;
 
 import org.mitre.openid.connect.filter.AuthorizationRequestFilter;
 import org.mitre.openid.connect.web.AuthenticationTimeStamper;
@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.authentication.AuthenticationManager;
+
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,17 +15,17 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.provider.expression.OAuth2WebSecurityExpressionHandler;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
+
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 
-import javax.sql.DataSource;
+
 
 @Configuration
 @EnableWebSecurity
 @DependsOn({ "connectOAuth2RequestFactory", "oAuth2AuthorizationServer" })
 public class UserContextConfig extends WebSecurityConfigurerAdapter {
 
-	private final DataSource dataSource;
+	
 
 	private final OAuth2WebSecurityExpressionHandler oauthWebExpressionHandler;
 
@@ -33,17 +34,21 @@ public class UserContextConfig extends WebSecurityConfigurerAdapter {
 	private final AuthorizationRequestFilter authRequestFilter;
 
 	private final PasswordEncoder passwordEncoder;
+	
+	private final UserDetailsService userDetailsService;
+	
 
 	@Autowired
-	public UserContextConfig(DataSource dataSource, OAuth2WebSecurityExpressionHandler oauthWebExpressionHandler,
+	public UserContextConfig(OAuth2WebSecurityExpressionHandler oauthWebExpressionHandler,
 			AuthenticationTimeStamper authenticationTimeStamper,
 			AuthorizationRequestFilter authRequestFilter,
-			PasswordEncoder passwordEncoder) {
-		this.dataSource = dataSource;
+			PasswordEncoder passwordEncoder,
+			UserDetailsService userDetailsService) {
 		this.oauthWebExpressionHandler = oauthWebExpressionHandler;
 		this.authenticationTimeStamper = authenticationTimeStamper;
 		this.authRequestFilter = authRequestFilter;
 		this.passwordEncoder = passwordEncoder;
+		this.userDetailsService = userDetailsService;
 	}
 
 	@Override
@@ -58,7 +63,7 @@ public class UserContextConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService()).passwordEncoder(this.passwordEncoder);
+		auth.userDetailsService(this.userDetailsService).passwordEncoder(this.passwordEncoder);
 	}
 
 	@Bean
@@ -67,8 +72,6 @@ public class UserContextConfig extends WebSecurityConfigurerAdapter {
 		return super.authenticationManagerBean();
 	}
 
-	@Bean
-	public UserDetailsService userDetailsService() {
-		return new JdbcUserDetailsManager(this.dataSource);
-	}
+	
+	
 }

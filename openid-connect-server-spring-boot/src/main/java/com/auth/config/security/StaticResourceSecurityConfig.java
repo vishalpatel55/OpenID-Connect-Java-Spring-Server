@@ -1,4 +1,4 @@
-package com.auth.config;
+package com.auth.config.security;
 
 import org.mitre.oauth2.web.CorsFilter;
 import org.springframework.beans.factory.annotation.Autowired;

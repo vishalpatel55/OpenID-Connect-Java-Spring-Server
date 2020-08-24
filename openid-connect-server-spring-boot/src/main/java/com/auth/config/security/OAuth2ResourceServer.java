@@ -1,4 +1,4 @@
-package com.auth.config;
+package com.auth.config.security;
 
 import static com.auth.util.Constants.ANY;
 import static com.auth.util.Constants.URL_SEPARATOR;
@@ -12,12 +12,10 @@ import org.mitre.openid.connect.web.ProtectedResourceRegistrationEndpoint;
 import org.mitre.openid.connect.web.RootController;
 import org.mitre.openid.connect.web.UserInfoEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
@@ -38,8 +36,6 @@ public class OAuth2ResourceServer extends ResourceServerConfigurerAdapter {
 
     private final OAuth2AuthenticationEntryPoint oauthAuthenticationEntryPoint;
 
-    private final AuthenticationManager authenticationManager;
-
     private final ClientCredentialsTokenEndpointFilter clientCredentialsEndpointFilter;
 
     private final JWTBearerClientAssertionTokenEndpointFilter clientAssertionEndpointFilter;
@@ -48,21 +44,17 @@ public class OAuth2ResourceServer extends ResourceServerConfigurerAdapter {
     public OAuth2ResourceServer(
             DefaultOAuth2ProviderTokenService defaultOAuth2ProviderTokenService,
             OAuth2AuthenticationEntryPoint oauthAuthenticationEntryPoint,
-            @Qualifier("clientAuthenticationManager") AuthenticationManager authenticationManager,
             ClientCredentialsTokenEndpointFilter clientCredentialsEndpointFilter,
             JWTBearerClientAssertionTokenEndpointFilter clientAssertionEndpointFilter ) {
         this.defaultOAuth2ProviderTokenService = defaultOAuth2ProviderTokenService;
         this.oauthAuthenticationEntryPoint = oauthAuthenticationEntryPoint;
-        this.authenticationManager = authenticationManager;
         this.clientCredentialsEndpointFilter = clientCredentialsEndpointFilter;
         this.clientAssertionEndpointFilter = clientAssertionEndpointFilter;
     }
 
     @Override
     public void configure(final ResourceServerSecurityConfigurer resources) {
-        //resources.tokenServices(this.defaultOAuth2ProviderTokenService);
-        resources.authenticationManager(this.authenticationManager);
-
+        resources.tokenServices(this.defaultOAuth2ProviderTokenService);
     }
 
     @Override

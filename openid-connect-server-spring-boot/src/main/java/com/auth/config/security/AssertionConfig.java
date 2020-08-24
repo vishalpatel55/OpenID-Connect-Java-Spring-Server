@@ -1,4 +1,4 @@
-package com.auth.config;
+package com.auth.config.security;
 
 import org.mitre.jwt.assertion.impl.NullAssertionValidator;
 import org.mitre.jwt.assertion.impl.WhitelistedIssuerAssertionValidator;

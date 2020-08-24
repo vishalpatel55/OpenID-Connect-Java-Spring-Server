@@ -1,4 +1,4 @@
-package com.auth.config;
+package com.auth.config.database;
 
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;

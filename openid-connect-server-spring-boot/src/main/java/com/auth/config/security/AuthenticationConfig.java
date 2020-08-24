@@ -1,4 +1,4 @@
-package com.auth.config;
+package com.auth.config.security;
 
 import org.mitre.oauth2.service.impl.DefaultClientUserDetailsService;
 import org.mitre.oauth2.web.CorsFilter;
@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,13 +20,16 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 
@@ -34,6 +38,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
 @Configuration
 @Order(1)
 public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
@@ -41,13 +47,17 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
     private final CorsFilter corsFilter;
 
     private final DefaultClientUserDetailsService defaultClientUserDetailsService;
+    
+    private final DataSource dataSource;
 
     @Autowired
     public AuthenticationConfig(
             CorsFilter corsFilter, 
-            DefaultClientUserDetailsService defaultClientUserDetailsService) {
+            DefaultClientUserDetailsService defaultClientUserDetailsService,
+            DataSource dataSource) {
         this.corsFilter = corsFilter;
         this.defaultClientUserDetailsService = defaultClientUserDetailsService;
+        this.dataSource = dataSource;
     }
 
     @Override
@@ -148,6 +158,13 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
     public OAuth2AccessDeniedHandler oAuth2AccessDeniedHandler() {
         return new OAuth2AccessDeniedHandler();
     }
+    
+    
+    @Bean
+	public UserDetailsService userDetailsService() {
+		return new JdbcUserDetailsManager(this.dataSource);
+	}
+	
 
     /**
      * public UserDetailsService uriEncodedClientUserDetailsService(){
